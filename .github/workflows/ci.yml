@@ -27,4 +27,4 @@ jobs:
 
       - name: Build and Test Auth Service
         working-directory: backend/auth-service
-        run: mvn clean test
+        run: mvn -B clean test
