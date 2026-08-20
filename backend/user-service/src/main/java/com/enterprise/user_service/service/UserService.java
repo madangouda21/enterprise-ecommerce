@@ -1,5 +1,6 @@
 package com.enterprise.user_service.service;
 
+import com.enterprise.user_service.dto.request.CreateUserRequest;
 import com.enterprise.user_service.dto.request.UpdateUserRequest;
 import com.enterprise.user_service.dto.response.UserResponse;
 
@@ -13,7 +14,17 @@ public interface UserService {
 
     List<UserResponse> getAllUsers();
 
-    UserResponse updateUser(Long id, UpdateUserRequest request);
+    UserResponse createUser(CreateUserRequest request);
+
+    UserResponse updateUser(
+            Long id,
+            UpdateUserRequest request
+    );
+
+    UserResponse updateUserByEmail(
+            String email,
+            UpdateUserRequest request
+    );
 
     void deleteUser(Long id);
 }

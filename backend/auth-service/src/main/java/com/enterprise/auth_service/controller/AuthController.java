@@ -35,4 +35,18 @@ public class AuthController {
                 authService.login(request)
         );
     }
+
+    /*
+     * =========================================================
+     * JWT PROTECTED TEST ENDPOINT
+     * =========================================================
+     */
+
+    @GetMapping("/test")
+    public ResponseEntity<String> testProtectedEndpoint() {
+
+        return ResponseEntity.ok(
+                "JWT authentication is working"
+        );
+    }
 }
