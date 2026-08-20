@@ -1,5 +1,7 @@
 package com.enterprise.user_service.dto.request;
 
+import com.enterprise.user_service.entity.Role;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdateUserRequest {
+public class CreateUserRequest {
 
     @NotBlank(message = "First name is required")
     private String firstName;
@@ -20,15 +22,9 @@ public class UpdateUserRequest {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
-    private String phone;
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
+    private String email;
 
-    private String address;
-
-    private String city;
-
-    private String state;
-
-    private String country;
-
-    private String postalCode;
+    private Role role;
 }

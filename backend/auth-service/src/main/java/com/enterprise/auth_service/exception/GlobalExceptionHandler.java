@@ -14,40 +14,107 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
+    /*
+     * =========================================================
+     * EMAIL ALREADY EXISTS
+     * =========================================================
+     */
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailAlreadyExists(
+            EmailAlreadyExistsException ex) {
 
         Map<String, Object> response = new HashMap<>();
+
         response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("error", "Bad Request");
+        response.put("status", HttpStatus.CONFLICT.value());
+        response.put("error", "Conflict");
         response.put("message", ex.getMessage());
 
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(
+                response,
+                HttpStatus.CONFLICT
+        );
     }
 
+
+    /*
+     * =========================================================
+     * BAD CREDENTIALS
+     * =========================================================
+     */
+
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<Map<String, Object>> handleBadCredentialsException(BadCredentialsException ex) {
+    public ResponseEntity<Map<String, Object>> handleBadCredentialsException(
+            BadCredentialsException ex) {
 
         Map<String, Object> response = new HashMap<>();
+
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.UNAUTHORIZED.value());
         response.put("error", "Unauthorized");
         response.put("message", "Invalid email or password");
 
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(
+                response,
+                HttpStatus.UNAUTHORIZED
+        );
     }
 
+
+    /*
+     * =========================================================
+     * VALIDATION ERRORS
+     * =========================================================
+     */
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, Object>> handleValidationException(
+            MethodArgumentNotValidException ex) {
 
         Map<String, Object> response = new HashMap<>();
+
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.BAD_REQUEST.value());
         response.put("error", "Validation Failed");
-        response.put("message",
-                ex.getBindingResult().getFieldError().getDefaultMessage());
 
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        String message = "Invalid request";
+
+        if (ex.getBindingResult().getFieldError() != null) {
+            message = ex.getBindingResult()
+                    .getFieldError()
+                    .getDefaultMessage();
+        }
+
+        response.put("message", message);
+
+        return new ResponseEntity<>(
+                response,
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+
+    /*
+     * =========================================================
+     * OTHER RUNTIME EXCEPTIONS
+     * =========================================================
+     */
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(
+            RuntimeException ex) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Bad Request");
+        response.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(
+                response,
+                HttpStatus.BAD_REQUEST
+        );
     }
 }
