@@ -1,5 +1,6 @@
 package com.enterprise.user_service.controller;
 
+import com.enterprise.user_service.dto.request.CreateUserRequest;
 import com.enterprise.user_service.dto.request.UpdateUserRequest;
 import com.enterprise.user_service.dto.response.UserResponse;
 import com.enterprise.user_service.service.UserService;
@@ -31,16 +32,18 @@ public class UserController {
         );
     }
 
+
     // =====================================================
-// CREATE USER PROFILE
-// =====================================================
+    // CREATE USER PROFILE
+    // Called by Auth Service during registration
+    // =====================================================
 
     @PostMapping("/internal")
-    public ResponseEntity<UserResponse> createUser(
+    public ResponseEntity<UserResponse> createUserProfile(
             @Valid @RequestBody CreateUserRequest request) {
 
         return ResponseEntity.ok(
-                userService.createUser(request)
+                userService.createUserProfile(request)
         );
     }
 
@@ -71,12 +74,6 @@ public class UserController {
             @Valid @RequestBody UpdateUserRequest request) {
 
         String email = authentication.getName();
-
-        System.out.println(
-                "AUTHENTICATED USER = [" +
-                        email +
-                        "]"
-        );
 
         return ResponseEntity.ok(
                 userService.updateUserByEmail(

@@ -1,6 +1,5 @@
 package com.enterprise.auth_service.dto;
 
-import com.enterprise.auth_service.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -10,18 +9,28 @@ import lombok.Setter;
 @Setter
 public class RegisterRequest {
 
-    @NotBlank
+    @NotBlank(message = "First name is required")
     private String firstName;
 
-    @NotBlank
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
-    @Email
-    @NotBlank
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Password is required")
     private String password;
 
-    private Role role;
+    private String phone;
+
+    private String address;
+
+    private String city;
+
+    private String state;
+
+    private String country;
+
+    private String postalCode;
 }
