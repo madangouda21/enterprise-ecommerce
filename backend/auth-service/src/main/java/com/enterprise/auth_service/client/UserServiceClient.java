@@ -1,55 +1,98 @@
 package com.enterprise.auth_service.client;
 
 import com.enterprise.auth_service.dto.RegisterRequest;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Component
-@RequiredArgsConstructor
 public class UserServiceClient {
 
     private final RestClient restClient;
 
-    private static final String USER_SERVICE_URL =
-            "http://localhost:8082";
+    private final String userServiceUrl;
+
+    public UserServiceClient(
+            RestClient restClient,
+            @Value("${user-service.url}") String userServiceUrl) {
+
+        this.restClient = restClient;
+        this.userServiceUrl = userServiceUrl;
+    }
 
     public void createUserProfile(
             RegisterRequest request) {
 
-        Map<String, Object> body =
-                new HashMap<>();
-
-        body.put(
-                "firstName",
-                request.getFirstName()
+        System.out.println(
+                "================================================="
         );
 
-        body.put(
-                "lastName",
-                request.getLastName()
+        System.out.println(
+                "AUTH SERVICE -> USER SERVICE"
         );
 
-        body.put(
-                "email",
-                request.getEmail()
+        System.out.println(
+                "URL = " +
+                        userServiceUrl +
+                        "/api/v1/users/internal"
         );
 
-        body.put(
-                "role",
-                "CUSTOMER"
+        System.out.println(
+                "EMAIL = " +
+                        request.getEmail()
         );
 
-        restClient.post()
-                .uri(
-                        USER_SERVICE_URL +
-                                "/api/v1/users/internal"
-                )
-                .body(body)
-                .retrieve()
-                .toBodilessEntity();
+        System.out.println(
+                "================================================="
+        );
+
+
+        try {
+
+            restClient.post()
+
+                    .uri(
+                            userServiceUrl +
+                                    "/api/v1/users/internal"
+                    )
+
+                    .body(request)
+
+                    .retrieve()
+
+                    .toBodilessEntity();
+
+
+            System.out.println(
+                    "USER PROFILE CREATED SUCCESSFULLY"
+            );
+
+
+        } catch (Exception exception) {
+
+            System.out.println(
+                    "================================================="
+            );
+
+            System.out.println(
+                    "USER SERVICE PROFILE CREATION FAILED"
+            );
+
+            System.out.println(
+                    "ERROR TYPE = " +
+                            exception.getClass().getName()
+            );
+
+            System.out.println(
+                    "ERROR MESSAGE = " +
+                            exception.getMessage()
+            );
+
+            System.out.println(
+                    "================================================="
+            );
+
+            throw exception;
+        }
     }
 }
