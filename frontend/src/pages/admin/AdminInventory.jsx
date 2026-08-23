@@ -1,0 +1,12 @@
+import { useEffect, useState } from "react";
+import inventoryService from "../../services/inventoryService";
+
+function AdminInventory() {
+    const [items, setItems] = useState([]); const [loading, setLoading] = useState(true); const [error, setError] = useState(""); const [editing, setEditing] = useState({});
+    const load = async () => { try { setLoading(true); setError(""); setItems(await inventoryService.getInventory()); } catch (err) { setError(err.message || "Unable to load inventory."); } finally { setLoading(false); } };
+    useEffect(() => { load(); }, []);
+    const save = async item => { try { const updated = await inventoryService.updateInventory(item.productId, { quantity: Number(editing[item.productId]) }); setItems(current => current.map(row => row.productId === item.productId ? updated : row)); setEditing(current => ({ ...current, [item.productId]: "" })); } catch (err) { window.alert(err.message || "Unable to update inventory."); } };
+    if (loading) return <div className="admin-page"><div className="loading-container"><div className="loading-spinner" /><p>Loading inventory...</p></div></div>;
+    return <div className="admin-page"><div className="admin-page-header"><div><span className="admin-eyebrow">STOCK</span><h1>Inventory</h1><p>Monitor available and reserved quantities.</p></div></div>{error && <div className="admin-error">{error}<button onClick={load}>Retry</button></div>}<div className="admin-panel-card"><div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Inventory</th><th>Product</th><th>Available</th><th>Reserved</th><th>Update</th></tr></thead><tbody>{items.map(item => { const low = Number(item.quantity || 0) <= 5; return <tr key={item.id}><td>#{item.id}</td><td>#{item.productId}</td><td><span className={low ? "admin-stock-low" : "admin-stock-ok"}>{item.quantity}</span></td><td>{item.reservedQuantity}</td><td><div className="admin-inline-edit"><input type="number" min="0" value={editing[item.productId] ?? ""} placeholder={item.quantity} onChange={e => setEditing(current => ({ ...current, [item.productId]: e.target.value }))} /><button disabled={editing[item.productId] === "" || Number(editing[item.productId]) < 0} onClick={() => save(item)}>Save</button></div></td></tr>; })}</tbody></table></div>{items.length === 0 && <div className="admin-empty-small">No inventory records found.</div>}</div></div>;
+}
+export default AdminInventory;
