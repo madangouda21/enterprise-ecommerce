@@ -3,6 +3,9 @@ package com.enterprise.product_service.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 
@@ -31,4 +34,13 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Category category;
+
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<ProductMedia> media = new ArrayList<>();
+
 }

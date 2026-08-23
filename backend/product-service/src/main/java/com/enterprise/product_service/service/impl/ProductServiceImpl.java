@@ -8,6 +8,9 @@ import com.enterprise.product_service.repository.ProductRepository;
 import com.enterprise.product_service.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.enterprise.product_service.dto.response.ProductMediaResponse;
+import com.enterprise.product_service.entity.ProductMedia;
+import com.enterprise.product_service.repository.ProductMediaRepository;
 
 import java.util.List;
 
@@ -16,6 +19,7 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductMediaRepository productMediaRepository;
 
     @Override
     public ProductResponse createProduct(CreateProductRequest request) {
@@ -94,15 +98,55 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
     }
 
+    private ProductMediaResponse mapMediaToResponse(
+            ProductMedia media) {
+
+        String url =
+                "http://localhost:8083/"
+                        + media.getFilePath();
+
+        return ProductMediaResponse.builder()
+
+                .id(media.getId())
+
+                .mediaType(
+                        media.getMediaType()
+                )
+
+                .fileName(
+                        media.getFileName()
+                )
+
+                .url(url)
+
+                .build();
+    }
+
     private ProductResponse mapToResponse(Product product) {
 
-        return new ProductResponse(
-                product.getId(),
-                product.getName(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getQuantity(),
-                product.getCategory()
-        );
+        List<ProductMediaResponse> media =
+                productMediaRepository
+                        .findByProductId(product.getId())
+                        .stream()
+                        .map(this::mapMediaToResponse)
+                        .toList();
+
+        return ProductResponse.builder()
+
+                .id(product.getId())
+
+                .name(product.getName())
+
+                .description(product.getDescription())
+
+                .price(product.getPrice())
+
+                .quantity(product.getQuantity())
+
+                .category(product.getCategory())
+
+                .media(media)
+
+                .build();
     }
 }
