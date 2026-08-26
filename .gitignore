@@ -19,3 +19,22 @@ node_modules/
 
 # VS Code
 .vscode/
+
+
+# Eclipse
+
+.classpath
+
+.project
+
+.settings/
+
+# IntelliJ
+
+.idea/
+
+*.iml
+
+# Maven
+
+target/
