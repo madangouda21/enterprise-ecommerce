@@ -6,6 +6,8 @@ import com.enterprise.order_service.dto.response.OrderItemResponse;
 import com.enterprise.order_service.dto.response.OrderResponse;
 import com.enterprise.order_service.entity.Order;
 import com.enterprise.order_service.entity.OrderItem;
+import com.enterprise.order_service.event.OrderCreatedEvent;
+import com.enterprise.order_service.kafka.OrderEventProducer;
 import com.enterprise.order_service.repository.OrderRepository;
 import com.enterprise.order_service.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final OrderEventProducer orderEventProducer;
 
     @Override
     public OrderResponse createOrder(CreateOrderRequest request) {
@@ -46,7 +49,18 @@ public class OrderServiceImpl implements OrderService {
 
         order.setTotalAmount(totalAmount);
 
+        // Save order in database
         Order savedOrder = orderRepository.save(order);
+
+        // Create Kafka event
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                savedOrder.getId(),
+                savedOrder.getUserId(),
+                savedOrder.getStatus().toString()
+        );
+
+        // Publish event to Kafka
+        orderEventProducer.publishOrderCreated(event);
 
         return mapToResponse(savedOrder);
     }
