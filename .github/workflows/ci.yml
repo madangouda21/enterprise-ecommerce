@@ -1,20 +1,22 @@
-name: Auth Service CI
+name: Enterprise E-Commerce CI
 
 on:
   push:
     branches:
+      - main
       - ci-cd
-
   pull_request:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
-  build:
+  backend:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -25,6 +27,27 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Build and Test Auth Service
-        working-directory: backend/auth-service
-        run: mvn -B clean test
+      - name: Run backend Maven tests for all services
+        run: |
+          for pom in backend/*/pom.xml; do
+            echo "Testing $pom"
+            mvn -B -f "$pom" test
+          done
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies and build
+        working-directory: frontend
+        run: |
+          npm install --no-fund --no-audit
+          npm run build

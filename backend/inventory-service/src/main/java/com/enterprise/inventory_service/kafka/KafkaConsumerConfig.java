@@ -44,11 +44,6 @@ public class KafkaConsumerConfig {
         JsonDeserializer<OrderCreatedEvent> deserializer =
                 new JsonDeserializer<>(OrderCreatedEvent.class);
 
-        deserializer.addTrustedPackages(
-                "com.enterprise.order_service.event",
-                "com.enterprise.inventory_service.event"
-        );
-
         return new DefaultKafkaConsumerFactory<>(
                 properties,
                 new StringDeserializer(),
