@@ -29,7 +29,7 @@ jobs:
 
       - name: Run backend Maven tests for all services
         run: |
-          for pom in backend/*/pom.xml; do
+          find backend -name pom.xml -print0 | sort -z | while IFS= read -r -d '' pom; do
             echo "Testing $pom"
             mvn -B -f "$pom" test
           done
